@@ -24,6 +24,8 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState()              #khoi tao trang thai ban dau
+
+    moveMade=False      #flag varible for when a move is made
     loadImages()                  #tao mang chua anh cac quan cờ
     running = True
     sqSelected=()                   #cac ô cờ được click
@@ -32,6 +34,7 @@ def main():
         for e in p.event.get():       #sử lý  kiện clicked chuột
             if e.type == p.QUIT:
                 running = False
+            #mouse handle
             elif e.type==p.MOUSEBUTTONDOWN:
                 location=p.mouse.get_pos()
                 col=location[0]//SQ_SIZE
@@ -45,9 +48,22 @@ def main():
                 if len(playerClicks)==2:
                     move=ChessEngine.Move(playerClicks[0],playerClicks[1],gs.board)
                     print(move.getChessNotation())    #in ra vi tri bat dau va ket thuc cua quan co
-                    gs.makeMove(move)                 #chuyen quan co den vi tri moi
-                    sqSelected=()  #khởi tạo lại trạng thái click
-                    playerClicks=[]
+                    validMoves = gs.getValidMoves()
+                    if move in validMoves:
+                        gs.makeMove(move)   #chuyen quan co den vi tri moi
+                        moveMade=True
+                        sqSelected=()  #khởi tạo lại trạng thái click
+                        playerClicks=[]
+                    else:
+                        playerClicks=[sqSelected]
+            elif e.type==p.KEYDOWN:
+                if e.key==p.K_z: # nhan z
+                    gs.undoMove()
+                    moveMade=False
+        if moveMade:
+            valideMoves=gs.getValidMoves()
+            moveMade=False
+
         drawGameState(screen, gs)           #ve ban co
         clock.tick(MAX_FPS)                 #gioi han so khung hinh moi giay
         p.display.flip()              #không co che do full man hinh

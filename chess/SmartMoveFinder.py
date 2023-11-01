@@ -139,3 +139,4 @@ def scoreMaterial(board):
             if square[0]=='b':
                 score-=pieceScore[square[1]]
     return score
+#C

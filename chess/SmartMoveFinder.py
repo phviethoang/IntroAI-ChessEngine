@@ -42,6 +42,7 @@ def findBestMove(gs, validMoves):
 
 def findBestMoveMinMax(gs, validMoves):
     global nextMove
+    random.shuffle(validMoves)
     findMoveNegaMax(gs, validMoves, DEPTH, -CHECKAMTE, CHECKAMTE,1 if gs.whiteToMove else -1)
     return nextMove
 
@@ -139,4 +140,3 @@ def scoreMaterial(board):
             if square[0]=='b':
                 score-=pieceScore[square[1]]
     return score
-#C

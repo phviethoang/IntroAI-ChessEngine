@@ -1,7 +1,7 @@
 # biểu diễn trạng thái của game và sự kiện người dùng
 
 import pygame as p
-from chess import ChessEngine, SmartMoveFinder
+import ChessEngine, SmartMoveFinder
 
 WIDTH = HEIGHT = 512  # kich thuoc ban co
 DIMENSION = 8         # số ô mỗi chiều
@@ -14,7 +14,7 @@ IMAGES = {}
 def loadImages():
     pieces = ["wp", "wR", "wN", "wB", "wK", "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load("chess/images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
 
 #ham thực thi
 def main():
@@ -81,7 +81,10 @@ def main():
                     animate = False
 
         if not gameOver and not humanTurn:
-            AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            print(len(validMoves))
+            AIMove = SmartMoveFinder.findBestMoveMinMax(gs,validMoves)
+            if (AIMove is None):
+                AIMove = SmartMoveFinder.findRandomMove(validMoves)
             gs.makeMove(AIMove)
             moveMade = True
             animate = True

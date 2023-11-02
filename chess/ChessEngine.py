@@ -12,6 +12,7 @@ class GameState():
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
             ["wR","wN","wB","wQ","wK","wB","wN","wR"]
             ]
+        self.moveNumber=0
         self.moveFunctions={'p':self.getPawnMoves,'R':self.getRookMoves,'N':self.getKnightMoves,
                             'B':self.getBishopMoves,'Q':self.getQueenMoves,'K':self.getKingMoves}
         self.whiteToMove = True                   #trắng đi trưoc
@@ -57,7 +58,7 @@ class GameState():
         self.updateCastleRights(move)
         self.castleRightsLog.append(CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks,
                                              self.currentCastlingRight.wqs, self.currentCastlingRight.bqs))
-
+        self.moveNumber+=1
 
     #undo the lát move made
     def undoMove(self):
@@ -86,6 +87,7 @@ class GameState():
                 else:
                     self.board[move.endRow][move.endCol - 2] = self.board[move.endRow][move.endCol + 1]
                     self.board[move.endRow][move.endCol + 1] = '--'
+            self.moveNumber-=1
 
     #all move considering check
 

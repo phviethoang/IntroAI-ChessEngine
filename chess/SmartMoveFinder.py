@@ -1,19 +1,19 @@
 import  random
 
-pieceScore = {"p": 100, "N": 320, "B": 330, "R": 500, "Q": 900, "K": 20000}
+pieceScore = {"p": 100, "N": 320, "B": 330, "R": 500, "Q": 900, "K": 0}
 
 knightScores = [[-66, -53, -75, -75, -10, -55, -58, -70],
-            [-3,  -6, 100, -36,   4,  62,  -4, -14],
-            [10,  67,   1,  74,  73,  27,  62,  -2],
-            [24,  24,  45,  37,  33,  41,  25,  17],
-            [-1,   5,  31,  21,  22,  35,   2,   0],
-           [-18,  10,  13,  22,  18,  15,  11, -14],
-           [-23, -15,   2,   0,   2,   0, -23, -20],
-           [-74, -23, -26, -24, -19, -35, -22, -69]]
+                [-3,  -6, 100, -36,   4,  62,  -4, -14],
+                [10,  67,   1,  74,  73,  27,  62,  -2],
+                [24,  24,  45,  37,  33,  41,  25,  17],
+                [-1,   5,  31,  21,  22,  35,   2,   0],
+                [-18,  10,  13,  22,  18,  15,  11, -14],
+                [-23, -15,   2,   0,   2,   0, -23, -20],
+                [-74, -23, -26, -24, -19, -35, -22, -69]]
 
 bishopScores = [[ -59, -78, -82, -76, -23,-107, -37, -50],
-           [-11,  20,  35, -42, -39,  31,   2, -22],
-           [-9,  39, -32,  41,  52, -10,  28, -14],
+            [-11,  20,  35, -42, -39,  31,   2, -22],
+            [-9,  39, -32,  41,  52, -10,  28, -14],
             [25,  17,  20,  34,  26,  25,  15,  10],
             [13,  10,  17,  23,  17,  16,   0,   7],
             [14,  25,  24,  15,   8,  25,  20,  15],
@@ -112,6 +112,7 @@ def findBestMove(gs, validMoves):
 
 def findBestMoveMinMax(gs, validMoves):
     global nextMove
+    nextMove=None
     random.shuffle(validMoves)
     findMoveNegaMax(gs, validMoves, DEPTH, -CHECKAMTE, CHECKAMTE,1 if gs.whiteToMove else -1)
     return nextMove
@@ -158,7 +159,7 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
 def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
     global nextMove
     random.shuffle(validMoves)
-    if depth==0:
+    if depth==0 :
         return turnMultiplier*scoreBoard(gs)
     
     maxScore= - CHECKAMTE
@@ -167,7 +168,16 @@ def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
         tmpCheckMate=gs.checkMate
         tmpStaleMate= gs.staleMate
         nextMoves = gs.getValidMoves()
-        score = -findMoveNegaMax(gs, nextMoves, depth-1, -beta, -alpha, -turnMultiplier)
+        if len(nextMoves)==0:
+            if gs.checkMate:
+                if gs.whiteToMove:
+                    score = -CHECKAMTE 
+                else:   
+                    score = CHECKAMTE 
+            elif gs.staleMate:
+                score = STABLEMATE
+        else:
+            score = -findMoveNegaMax(gs, nextMoves, depth-1, -beta, -alpha, -turnMultiplier)
         if score > maxScore:
             maxScore = score
             if depth == DEPTH:

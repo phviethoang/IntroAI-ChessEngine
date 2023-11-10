@@ -166,7 +166,7 @@ def findBestMoveMinMax(gs, validMoves):
     random.shuffle(validMoves)
     findMoveNegaMax(gs, validMoves, DEPTH, -CHECKAMTE, CHECKAMTE, 1 if gs.whiteToMove else -1)
     end_time = time.time()
-    moveTime += (end_time - start_time)
+    moveTime = (end_time - start_time)
     return nextMove
 
 
@@ -253,10 +253,7 @@ def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
         nextMoves = gs.getValidMoves()
         if len(nextMoves) == 0:
             if gs.checkMate:
-                if gs.whiteToMove:
-                    score = CHECKAMTE
-                else:
-                    score = -CHECKAMTE
+                score = turnMultiplier * -CHECKAMTE
             elif gs.staleMate:
                 score = STABLEMATE
         else:

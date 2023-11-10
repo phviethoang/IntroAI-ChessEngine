@@ -25,3 +25,6 @@ def plot_performance(move_times, move_counts, save_path='performance_charts'):
     plt.legend()
     plt.savefig(os.path.join(save_path, 'move_counts.png'))  # Lưu biểu đồ
     plt.show()
+
+
+

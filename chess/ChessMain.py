@@ -1,14 +1,18 @@
-# biểu diễn trạng thái của game và sự kiện người dùng
-
 import pygame as p
 import ChessEngine, SmartMoveFinder
+import performance
+from SmartMoveFinder import moveCounter, moveTime
 
-WIDTH = HEIGHT = 512  # kich thuoc ban co
-DIMENSION = 8  # số ô mỗi chiều
-SQ_SIZE = HEIGHT // DIMENSION  # kich thuoc 1 ô
-MAX_FPS = 15  # FOR ANIMATIONS LATER ON
+# kích thước bàn cờ
+WIDTH = HEIGHT = 512
+# số ô mỗi chiều
+DIMENSION = 8
+# kích thước 1 ô
+SQ_SIZE = HEIGHT // DIMENSION
+# số khung hình tối đa mỗi giây
+MAX_FPS = 15
+# ảnh các quân cờ
 IMAGES = {}
-
 
 def loadImages():
     """
@@ -16,14 +20,12 @@ def loadImages():
     """
     ...
 
-
 def main():
     """
     Hàm chính của chương trình, thực hiện khởi tạo trạng thái ban đầu của bàn cờ, lấy thông tin click chuột của người chơi, 
     xử lý các sự kiện, thực hiện các nước đi hợp lệ, vẽ bàn cờ và kiểm tra kết thúc trò chơi.
     """
     ...
-
 
 def highlightSquares(screen, gs, validMoves, sqSelected):
     """
@@ -36,7 +38,6 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
     """
     ...
 
-
 def drawBoard(screen):
     """
     Vẽ bàn cờ với 2 màu trắng và xám.
@@ -44,7 +45,6 @@ def drawBoard(screen):
     :param screen: pygame.Surface object, màn hình hiển thị bàn cờ
     """
     ...
-
 
 def drawPieces(screen, board):
     """
@@ -54,7 +54,6 @@ def drawPieces(screen, board):
     :param board: list, danh sách các quân cờ trên bàn cờ
     """
     ...
-
 
 def drawGameState(screen, gs, validMoves, sqSelected):
     """
@@ -67,7 +66,6 @@ def drawGameState(screen, gs, validMoves, sqSelected):
     """
     ...
 
-
 def animateMove(move, screen, board, clock):
     """
     Thực hiện animation cho một nước đi trên bàn cờ.
@@ -79,7 +77,6 @@ def animateMove(move, screen, board, clock):
     """
     ...
 
-
 def drawText(screen, text):
     """
     Vẽ text trên màn hình.
@@ -89,12 +86,8 @@ def drawText(screen, text):
     """
     ...
 
-
 if __name__ == "__main__":
     main()
-# biểu diễn trạng thái của game và sự kiện người dùng
-
-import pygame as p
 import ChessEngine, SmartMoveFinder
 
 WIDTH = HEIGHT = 512  # kich thuoc ban co
@@ -119,6 +112,9 @@ def main():
     Hàm chính của chương trình, thực hiện khởi tạo trạng thái ban đầu của bàn cờ, lấy thông tin click chuột của người chơi, 
     xử lý các sự kiện, thực hiện các nước đi hợp lệ, vẽ bàn cờ và kiểm tra kết thúc trò chơi.
     """
+    move_times = []
+    move_counts = []
+    
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
     clock = p.time.Clock()
@@ -160,6 +156,9 @@ def main():
                         for i in range(len(validMoves)):
                             if move == validMoves[i]:
                                 gs.makeMove(validMoves[i])  # chuyen quan co den vi tri moi
+                                if moveMade:
+                                    move_times.append(moveTime)
+                                    move_counts.append(moveCounter)
                                 moveMade = True
                                 animate = True
                                 sqSelected = ()  # khởi tạo lại trạng thái click
@@ -182,11 +181,14 @@ def main():
 
         if not gameOver and not humanTurn:
             AIMove = SmartMoveFinder.findBestMoveMinMax(gs, validMoves)
+            
             if (AIMove is None):
                 AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            
             gs.makeMove(AIMove)
             moveMade = True
             animate = True
+        
 
         if moveMade:
             if animate:
@@ -194,6 +196,10 @@ def main():
             validMoves = gs.getValidMoves()
             moveMade = False
             animate = False
+            
+            # Cập nhật dữ liệu hiệu suất sau mỗi nước đi
+            move_times.append(SmartMoveFinder.moveTime)
+            move_counts.append(SmartMoveFinder.moveCounter)
 
         drawGameState(screen, gs, validMoves, sqSelected)  # ve ban co
 
@@ -209,6 +215,11 @@ def main():
 
         clock.tick(MAX_FPS)  # gioi han so khung hinh moi giay
         p.display.flip()  # không co che do full man hinh
+        
+        if gameOver:
+            # Hiển thị biểu đồ hiệu suất
+            performance.plot_performance(move_times, move_counts)
+
 
 
 def highlightSquares(screen, gs, validMoves, sqSelected):
@@ -221,7 +232,7 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
     :param sqSelected: tuple, tọa độ ô cờ đang được chọn
     """
 
-    if sqSelected != ():
+    if sqSelected is not None:
         r, c = sqSelected
         if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'):
             s = p.Surface((SQ_SIZE, SQ_SIZE))

@@ -1,4 +1,8 @@
 import random
+import time
+
+moveCounter = 0
+moveTime = 0
 
 # Điểm số của từng quân cờ
 pieceScore = {"p": 100, "N": 320, "B": 330, "R": 500, "Q": 900, "K": 0}
@@ -113,6 +117,7 @@ def findBestMove(gs, validMoves):
     Returns:
     tuple: Tọa độ của quân cờ được di chuyển và tọa độ đích của nước đi.
     """
+    
     turnMultiplire = 1 if gs.whiteToMove else -1
     opponentMinMaxScore = CHECKAMTE
     bestMove = None
@@ -155,10 +160,13 @@ def findBestMoveMinMax(gs, validMoves):
     Returns:
     tuple: Tọa độ của quân cờ được di chuyển và tọa độ đích của nước đi.
     """
-    global nextMove
+    global nextMove, moveCounter, moveTime
+    start_time = time.time()
     nextMove = None
     random.shuffle(validMoves)
     findMoveNegaMax(gs, validMoves, DEPTH, -CHECKAMTE, CHECKAMTE, 1 if gs.whiteToMove else -1)
+    end_time = time.time()
+    moveTime += (end_time - start_time)
     return nextMove
 
 
@@ -175,7 +183,8 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
     Returns:
     int: Điểm số của nước đi.
     """
-    global nextMove
+    global nextMove, moveCounter
+    moveCounter += 1
     random.shuffle(validMoves)
     if depth == 0:
         return scoreBoard(gs)
@@ -183,6 +192,7 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
     if whiteToMove:
         maxScore = -CHECKAMTE
         for move in validMoves:
+            moveCounter += 1
             gs.makeMove(move)
             tmpCheckMate = gs.checkMate
             tmpStaleMate = gs.staleMate
@@ -229,13 +239,14 @@ def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
     Returns:
     int: Điểm số của nước đi.
     """
-    global nextMove
+    global nextMove, moveCounter
     random.shuffle(validMoves)
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
 
     maxScore = - CHECKAMTE
     for move in validMoves:
+        moveCounter += 1
         gs.makeMove(move)
         tmpCheckMate = gs.checkMate
         tmpStaleMate = gs.staleMate
@@ -243,9 +254,9 @@ def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
         if len(nextMoves) == 0:
             if gs.checkMate:
                 if gs.whiteToMove:
-                    score = -CHECKAMTE
-                else:
                     score = CHECKAMTE
+                else:
+                    score = -CHECKAMTE
             elif gs.staleMate:
                 score = STABLEMATE
         else:

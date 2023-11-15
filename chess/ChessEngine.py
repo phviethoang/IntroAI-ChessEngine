@@ -19,6 +19,7 @@ class GameState():
                               'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves}
         self.whiteToMove = True  # trắng đi trưoc
         self.moveLog = []  # luu tru cac nuoc da di
+        self.pins = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
         self.checkMate = False  # check xem có chiếu hết hay không
@@ -212,39 +213,47 @@ class GameState():
                     self.moveFunctions[piece](r, c, moves)
         return moves
 
+
     # nhận tất cả các đường di chuyển của quân tốt tại vị trí row, col
-    def getPawnMoves(self, r, c, moves):
-        if self.whiteToMove:
-            if self.board[r - 1][c] == "--":
-                moves.append(Move((r, c), (r - 1, c), self.board))
-                if r == 6 and self.board[r - 2][c] == "--":
-                    moves.append(Move((r, c), (r - 2, c), self.board))
-            if c - 1 >= 0:
-                if self.board[r - 1][c - 1][0] == 'b':
-                    moves.append(Move((r, c), (r - 1, c - 1), self.board))
-                elif (r - 1, c - 1) == self.enpassantPossible:
-                    moves.append(Move((r, c), (r - 1, c - 1), self.board, isEnpassantPossible=True))
-            if c + 1 <= 7:
-                if self.board[r - 1][c + 1][0] == 'b':
-                    moves.append(Move((r, c), (r - 1, c + 1), self.board))
-                elif (r - 1, c + 1) == self.enpassantPossible:
-                    moves.append(Move((r, c), (r - 1, c + 1), self.board, isEnpassantPossible=True))
-        else:
-            if self.board[r + 1][c] == "--":
-                moves.append(Move((r, c), (r + 1, c), self.board))
-                if r == 1 and self.board[r + 2][c] == "--":
-                    moves.append(Move((r, c), (r + 2, c), self.board))
-            if c - 1 >= 0:
-                if self.board[r + 1][c - 1][0] == 'w':
-                    moves.append(Move((r, c), (r + 1, c - 1), self.board))
-                elif (r + 1, c - 1) == self.enpassantPossible:
-                    moves.append(Move((r, c), (r + 1, c - 1), self.board, isEnpassantPossible=True))
-            if c + 1 <= 7:
-                if self.board[r + 1][c + 1][0] == 'w':
-                    moves.append(Move((r, c), (r + 1, c + 1), self.board))
-                elif (r + 1, c + 1) == self.enpassantPossible:
-                    moves.append(Move((r, c), (r + 1, c + 1), self.board, isEnpassantPossible=True))
-        # phong hau, xe cho quan tot
+    def getPawnMoves(self, row, col, moves):
+            """
+            Trả về tất cả các nước đi hợp lệ của quân tốt tại vị trí (row, col) trên bàn cờ hiện tại.
+            Nếu quân tốt là quân trắng, hàm sẽ trả về các nước đi hợp lệ của quân tốt trắng.
+            Nếu quân tốt là quân đen, hàm sẽ trả về các nước đi hợp lệ của quân tốt đen.
+            Các nước đi hợp lệ được lưu trữ trong danh sách 'moves'.
+            """
+            
+            if self.whiteToMove:
+                if self.board[row - 1][col] == "--":
+                    moves.append(Move((row, col), (row - 1, col), self.board))
+                    if row == 6 and self.board[row - 2][col] == "--":
+                        moves.append(Move((row, col), (row - 2, col), self.board))
+                if col - 1 >= 0:
+                    if self.board[row - 1][col - 1][0] == 'b':
+                        moves.append(Move((row, col), (row - 1, col - 1), self.board))
+                    elif (row - 1, col - 1) == self.enpassantPossible:
+                        moves.append(Move((row, col), (row - 1, col - 1), self.board, isEnpassantPossible=True))
+                if col + 1 <= 7:
+                    if self.board[row - 1][col + 1][0] == 'b':
+                        moves.append(Move((row, col), (row - 1, col + 1), self.board))
+                    elif (row - 1, col + 1) == self.enpassantPossible:
+                        moves.append(Move((row, col), (row - 1, col + 1), self.board, isEnpassantPossible=True))
+            else:
+                if self.board[row + 1][col] == "--":
+                    moves.append(Move((row, col), (row + 1, col), self.board))
+                    if row == 1 and self.board[row + 2][col] == "--":
+                        moves.append(Move((row, col), (row + 2, col), self.board))
+                if col - 1 >= 0:
+                    if self.board[row + 1][col - 1][0] == 'w':
+                        moves.append(Move((row, col), (row + 1, col - 1), self.board))
+                    elif (row + 1, col - 1) == self.enpassantPossible:
+                        moves.append(Move((row, col), (row + 1, col - 1), self.board, isEnpassantPossible=True))
+                if col + 1 <= 7:
+                    if self.board[row + 1][col + 1][0] == 'w':
+                        moves.append(Move((row, col), (row + 1, col + 1), self.board))
+                    elif (row + 1, col + 1) == self.enpassantPossible:
+                        moves.append(Move((row, col), (row + 1, col + 1), self.board, isEnpassantPossible=True))
+                    
 
     # nhận tất cả các đường di chuyển của quân xe tại vị trí row, col
     def getRookMoves(self, r, c, moves):
@@ -393,6 +402,8 @@ class Move():
                 self.pieceCaptured = "wp"
             else:
                 self.pieceCaptured = "bp"
+        self.castle = isCastleMove
+        self.isCapture = self.pieceCaptured != "--"
 
         self.isCastleMove = isCastleMove
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
@@ -435,3 +446,41 @@ class Move():
             str: Chuỗi biểu diễn tọa độ của ô cờ theo định dạng của cờ vua.
         """
         return self.colsToFiles[c] + self.rowToRanks[r]
+
+    def __str__(self):
+        #castle move
+        if self.castle:
+            return "O-O" if self.endCol == 6 else "O-O-O"
+
+        endSquare = self.getRankFile(self.endRow, self.endCol)
+
+        #pawn moves
+        if self.pieceMoved[1] == 'p':
+            if self.isCapture:
+                return self.colsToFiles[self.startCol] + "x" + endSquare
+            else:
+                return endSquare
+
+        #two of the same type of piece moving to a square, Nbd2 if both knights can move to d2
+        if self.pieceMoved[1] == 'N':
+            if self.isCapture:
+                return "N" + self.colsToFiles[self.startCol] + "x" + endSquare
+            else:
+                return "N" + endSquare
+        #also adding + for check move, and # for checkmate move
+        if self.isCapture:
+            if self.pieceMoved[1] == 'K':
+                return "K" + self.colsToFiles[self.startCol] + "x" + endSquare
+            else:
+                return self.pieceMoved[1] + "x" + endSquare
+
+        #piece moves
+        moveString = self.pieceMoved[1]
+        if self.pieceCaptured != "--":
+            moveString += "x"
+        return moveString + endSquare
+        
+        
+        
+
+

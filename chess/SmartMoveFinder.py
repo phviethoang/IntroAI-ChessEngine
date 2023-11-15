@@ -87,9 +87,9 @@ CHECKAMTE = 100000000
 
 # Điểm số khi hòa cờ
 STABLEMATE = 0
-
 # Độ sâu tìm kiếm
 DEPTH = 3
+
 
 
 def findRandomMove(validMoves):

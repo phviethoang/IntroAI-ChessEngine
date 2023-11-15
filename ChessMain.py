@@ -3,8 +3,7 @@
 import pygame as p
 import ChessEngine, SmartMoveFinder
 from SmartMoveFinder import moveCounter, moveTime
-import performance
-import csv
+
 BOARD_WIDTH = BOARD_HEIGHT = 512  # kich thuoc ban co
 MOVE_LOG_PANEL_WIDTH = 250
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
@@ -19,7 +18,7 @@ def loadImages():
     """
     pieces = ["wp", "wR", "wN", "wB", "wK", "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("chess/images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
 
 
 # ham thực thi
@@ -29,10 +28,8 @@ def main():
     xử lý các sự kiện, thực hiện các nước đi hợp lệ, vẽ bàn cờ và kiểm tra kết thúc trò chơi.
     """
     
-    move_Times = []
-    move_counts = []
-    
-    
+    # move_Times = []
+    # move_counts = []
     p.init()
     screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
     clock = p.time.Clock()
@@ -115,8 +112,8 @@ def main():
             animate = False
             
             # Cập nhật dữ liệu mỗi nước đi
-            move_Times.append(SmartMoveFinder.moveTime)
-            move_Times.append(SmartMoveFinder.moveCounter)
+            # move_Times.append(SmartMoveFinder.moveTime)
+            # move_Times.append(SmartMoveFinder.moveCounter)
             
         drawGameState(screen, gs, validMoves, sqSelected, moveLogFont)  # ve ban co
 

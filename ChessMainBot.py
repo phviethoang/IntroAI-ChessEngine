@@ -1,6 +1,5 @@
 import pygame as p
 import ChessEngine, SmartMoveFinder, performance
-import time
 
 # kích thước bàn cờ
 WIDTH = HEIGHT = 512

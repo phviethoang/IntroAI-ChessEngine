@@ -7,6 +7,8 @@ moveTime = 0
 # Điểm số của từng quân cờ
 pieceScore = {"p": 100, "N": 320, "B": 330, "R": 500, "Q": 900, "K": 0}
 
+
+
 # Điểm số của từng quân mã
 knightScores = [[-66, -53, -75, -75, -10, -55, -58, -70],
                 [-3, -6, 100, -36, 4, 62, -4, -14],

@@ -11,6 +11,7 @@ SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
 IMAGES = {}
 
+
 def loadImages():
     """
     Load hình ảnh các quân cờ.
@@ -18,6 +19,7 @@ def loadImages():
     pieces = ["wp", "wR", "wN", "wB", "wK", "wQ", "bp", "bR", "bN", "bB", "bK", "bQ"]
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("chess/images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
+
 
 def main():
     """
@@ -61,6 +63,7 @@ def main():
     performance.plot_performance(white_move_times, white_move_counts, "white_performance.png")
     performance.plot_performance(black_move_times, black_move_counts, "black_performance.png")
 
+
 def drawGameState(screen, gs, validMoves):
     """
     Vẽ trạng thái hiện tại của trò chơi.
@@ -86,7 +89,8 @@ def drawBoard(screen):
         for c in range(DIMENSION):
             color = colors[(r + c) % 2]
             p.draw.rect(screen, color, p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
-            
+
+
 def drawPieces(screen, board):
     """
     Vẽ các quân cờ trên bàn cờ.
@@ -121,8 +125,6 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
             for move in validMoves:
                 if move.startRow == r and move.startCol == c:
                     screen.blit(s, (move.endCol * SQ_SIZE, move.endRow * SQ_SIZE))
-
-
 
 
 if __name__ == "__main__":

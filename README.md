@@ -27,11 +27,11 @@ python ChessMain.py
 - `ChessEngine.py`: File chứa các hàm xử lý logic của trò chơi.
 - `ChessMainBot.py`: File chứa các hàm xử lý logic của trò chơi khi chơi với máy.
 - `ChessMain.py`: File chính để chạy trò chơi.
-- `performance.py`: File chứa các hàm đánh giá hiệu năng của AI.
+- `SmartMoveFinder.py`: File chứa các hàm xử lý logic của trò chơi khi chơi với máy.
 - `requirements.txt`: Danh sách các thư viện cần thiết.
 
 ## Các thành viên trong nhóm
-- Trương Công Đạt - 20215346
-- Hoàng Đình Hùng - 20210390
-- Nguyễn Hoàng Phúc - 20215452
-- Hoàng Công Phú - 20215451
+- [Trương Công Đạt - 20215346](https://github.com/Dodero10)
+- [Hoàng Đình Hùng - 20210390](https://github.com/hunghd20012003)
+- [Nguyễn Hoàng Phúc - 20215452](https://github.com/phuccodetrau)
+- [Hoàng Công Phú - 20215451](https://github.com/congphucf)

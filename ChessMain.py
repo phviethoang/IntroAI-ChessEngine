@@ -1,5 +1,3 @@
-# biểu diễn trạng thái của game và sự kiện người dùng
-
 import pygame as p
 import ChessEngine, SmartMoveFinder
 from SmartMoveFinder import moveCounter, moveTime
@@ -11,6 +9,7 @@ DIMENSION = 8  # số ô mỗi chiều
 SQ_SIZE = BOARD_HEIGHT // DIMENSION  # kich thuoc 1 ô
 MAX_FPS = 15  # FOR ANIMATIONS LATER ON
 IMAGES = {}
+
 
 def loadImages():
     """
@@ -27,7 +26,7 @@ def main():
     Hàm chính của chương trình, thực hiện khởi tạo trạng thái ban đầu của bàn cờ, lấy thông tin click chuột của người chơi, 
     xử lý các sự kiện, thực hiện các nước đi hợp lệ, vẽ bàn cờ và kiểm tra kết thúc trò chơi.
     """
-    
+
     # move_Times = []
     # move_counts = []
     p.init()
@@ -45,7 +44,7 @@ def main():
     # lưu trư thong tin click cua nguoi choi
     validMoves = gs.getValidMoves()
     gameOver = False
-    playerOne = True  
+    playerOne = True
     playerTwo = True
     while running:  # neu dang thuc thi chuong trinh
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
@@ -53,7 +52,7 @@ def main():
         for e in p.event.get():  # sử lý  kiện clicked chuột
             if e.type == p.QUIT:
                 running = False
-                
+
             # mouse handle
             elif e.type == p.MOUSEBUTTONDOWN:
                 if not gameOver and humanTurn:
@@ -73,9 +72,9 @@ def main():
                         for i in range(len(validMoves)):
                             if move == validMoves[i]:
                                 gs.makeMove(validMoves[i])  # chuyen quan co den vi tri moi
-                                if moveMade:
-                                    move_Times.append(moveTime)
-                                    move_counts.append(moveCounter)
+                                # if moveMade:
+                                #     move_Times.append(moveTime)
+                                #     move_counts.append(moveCounter)
                                 moveMade = True
                                 animate = True
                                 sqSelected = ()  # khởi tạo lại trạng thái click
@@ -110,16 +109,17 @@ def main():
             validMoves = gs.getValidMoves()
             moveMade = False
             animate = False
-            
+
             # Cập nhật dữ liệu mỗi nước đi
             # move_Times.append(SmartMoveFinder.moveTime)
             # move_Times.append(SmartMoveFinder.moveCounter)
-            
+
         drawGameState(screen, gs, validMoves, sqSelected, moveLogFont)  # ve ban co
 
         if gs.checkMate or gs.staleMate:
             gameOver = True
-            drawEndGameText(screen, "Stalemate" if gs.staleMate else "Black wins by checkmate" if gs.whiteToMove else "White wins by checkmate")
+            drawEndGameText(screen,
+                            "Stalemate" if gs.staleMate else "Black wins by checkmate" if gs.whiteToMove else "White wins by checkmate")
 
         clock.tick(MAX_FPS)  # gioi han so khung hinh moi giay
         p.display.flip()  # không co che do full man hinh
@@ -192,6 +192,7 @@ def drawPieces(screen, board):
             if piece != "--":
                 screen.blit(IMAGES[piece], p.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
+
 def drawMoveLog(screen, game_state, font):
     move_log_rect = p.Rect(BOARD_WIDTH, 0, MOVE_LOG_PANEL_WIDTH, MOVE_LOG_PANEL_HEIGHT)
     p.draw.rect(screen, p.Color('black'), move_log_rect)
@@ -214,7 +215,6 @@ def drawMoveLog(screen, game_state, font):
         text_location = move_log_rect.move(padding, text_y)
         screen.blit(text_object, text_location)
         text_y += text_object.get_height() + line_spacing
-
 
 
 def animateMove(move, screen, board, clock):

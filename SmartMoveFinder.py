@@ -297,7 +297,7 @@ def scoreBoard(gs):
         for square in range(0, 8):
             piece = gs.board[row][square]
             if piece != "--":
-                if gs.moveNumber <= 10:
+                if gs.moveNumber <= 10 and gs.moveNumber >=40:
                     piece_position_score = 0
                 else:
                     piece_position_score = piecePositionScores[piece][row][square]

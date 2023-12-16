@@ -44,8 +44,8 @@ def main():
     # lưu trư thong tin click cua nguoi choi
     validMoves = gs.getValidMoves()
     gameOver = False
-    playerOne = True
-    playerTwo = True
+    playerOne = False
+    playerTwo = False
     while running:  # neu dang thuc thi chuong trinh
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
 

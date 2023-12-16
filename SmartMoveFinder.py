@@ -69,6 +69,61 @@ kingScores = [[-90, -90, -90, -90, -90, -90, -90, -90],
               [20, 20, 0, 0, 0, 0, 20, 20],
               [20, 30, 10, 0, 0, 10, 30, 20]]
 
+#Điểm tàn cuộc
+knightScoresEndGame = [[0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0]]
+
+bishopScoresEndGame = [[0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0]]
+
+rookScoresEndGame = [[0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0]]
+
+queenScoresEndGame = [[0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0]]
+
+pawnScoresEndGame = [[800, 800, 800, 800, 800, 800, 800, 800],
+                        [100, 100, 100, 100, 100, 100, 100, 100],
+                        [50, 50, 50, 50, 50, 50, 50, 50],
+                        [30, 30, 30, 30, 30, 30, 30, 30],
+                        [20, 20, 20, 20, 20, 20, 20, 20],
+                        [10, 10, 10, 10, 10, 10, 10, 10],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0]]
+
+kingScoresEndGame =     [[-10, -10, -10, -10, -10, -10, -10, -10],
+                        [-10, 10, 10, 10, 10, 10, 10, -10],
+                        [-10, 10, 20, 20, 20, 20, 10, -10],
+                        [-10, 10, 20, 30, 30, 20, 10, -10],
+                        [-10, 10, 20, 30, 30, 20, 10, -10],
+                        [-10, 10, 20, 20, 20, 20, 10, -10],
+                        [-10, 10, 10, 10, 10, 10, 10, -10],
+                        [-10, -10, -10, -10, -10, -10, -10, -10]]
+
 # Điểm số của từng quân cờ tại vị trí cụ thể trên bàn cờ
 piecePositionScores = {"wN": knightScores,
                        "bN": knightScores[::-1],
@@ -82,6 +137,20 @@ piecePositionScores = {"wN": knightScores,
                        "bp": pawnScores[::-1],
                        "wK": kingScores,
                        "bK": kingScores[::-1],
+                       }
+
+piecePositionScoresEndGame = {"wN": knightScoresEndGame,
+                       "bN": knightScoresEndGame[::-1],
+                       "wB": bishopScoresEndGame,
+                       "bB": bishopScoresEndGame[::-1],
+                       "wQ": queenScoresEndGame,
+                       "bQ": queenScoresEndGame[::-1],
+                       "wR": rookScoresEndGame,
+                       "bR": rookScoresEndGame[::-1],
+                       "wp": pawnScoresEndGame,
+                       "bp": pawnScoresEndGame[::-1],
+                       "wK": kingScoresEndGame,
+                       "bK": kingScoresEndGame[::-1],
                        }
 
 # Điểm số khi chiếu hết
@@ -255,7 +324,7 @@ def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
         nextMoves = gs.getValidMoves()
         if len(nextMoves) == 0:
             if gs.checkMate:
-                score = turnMultiplier * -CHECKAMTE
+                score = turnMultiplier * CHECKAMTE
             elif gs.staleMate:
                 score = STABLEMATE
         else:
@@ -297,16 +366,22 @@ def scoreBoard(gs):
         for square in range(0, 8):
             piece = gs.board[row][square]
             if piece != "--":
-                if gs.moveNumber <= 10 and gs.moveNumber >=40:
+                if gs.moveNumber <= 10:
                     piece_position_score = 0
+                elif gs.moveNumber >= 40:
+                    piece_position_score = piecePositionScoresEndGame[piece][row][square]
                 else:
                     piece_position_score = piecePositionScores[piece][row][square]
+
                 if piece[0] == "w":
                     score += pieceScore[piece[1]] + piece_position_score
                 if piece[0] == "b":
                     score -= pieceScore[piece[1]] + piece_position_score
+    # if gs.whiteToMove:
+    #     score += len(gs.getValidMoves())
+    # else:
+    #     score -= len(gs.getValidMoves())
     return score
-
 
 def scoreMaterial(gs):
     """

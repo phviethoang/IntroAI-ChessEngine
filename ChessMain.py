@@ -1,9 +1,11 @@
+import sys
+
 import pygame as p
 import ChessEngine, SmartMoveFinder
 from SmartMoveFinder import moveCounter, moveTime
 
-BOARD_WIDTH = BOARD_HEIGHT = 512  # kich thuoc ban co
-MOVE_LOG_PANEL_WIDTH = 250
+BOARD_WIDTH = BOARD_HEIGHT = 720 # kich thuoc ban co
+MOVE_LOG_PANEL_WIDTH = 280
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSION = 8  # số ô mỗi chiều
 SQ_SIZE = BOARD_HEIGHT // DIMENSION  # kich thuoc 1 ô
@@ -19,6 +21,49 @@ def loadImages():
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
 
+def draw_promotion_popup(screen):
+    popup_rect = p.Rect(250, 180, 500, 360)
+    p.draw.rect(screen, (255, 255, 255), popup_rect)
+
+    font = p.font.Font(None, 36)
+    text = font.render("Choose the piece:", True, (0, 0, 0))
+    text_rect = text.get_rect(center=(popup_rect.centerx, popup_rect.top + 30))
+    screen.blit(text, text_rect)
+
+    options = ["Q", "R", "B", "N"]
+    button_rects = []
+    for i, option in enumerate(options):
+        button_rect = p.Rect(
+            popup_rect.left + 30 + i * 120, popup_rect.top + 80, 100, 40
+        )
+        p.draw.rect(screen, (200, 200, 200), button_rect)
+        button_text = font.render(option, True, (0, 0, 0))
+        text_rect = button_text.get_rect(center=button_rect.center)
+        screen.blit(button_text, text_rect)
+        button_rects.append((button_rect, option))
+
+    p.display.flip()
+
+    while True:
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                p.quit()
+                sys.exit()
+            elif event.type == p.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                for button_rect, option in button_rects:
+                    if button_rect.collidepoint(x, y):
+                        return option
+
+def promote_pawn_popup():
+    option = None
+    popup_screen = p.display.set_mode((1000, 720))
+    p.display.set_caption("Chess Game - Promotion Popup")
+
+    while option is None:
+        option = draw_promotion_popup(popup_screen)
+
+    return option
 
 # ham thực thi
 def main():
@@ -44,8 +89,8 @@ def main():
     # lưu trư thong tin click cua nguoi choi
     validMoves = gs.getValidMoves()
     gameOver = False
-    playerOne = False
-    playerTwo = False
+    playerOne = True
+    playerTwo = True
     while running:  # neu dang thuc thi chuong trinh
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
 
@@ -72,6 +117,10 @@ def main():
                         for i in range(len(validMoves)):
                             if move == validMoves[i]:
                                 gs.makeMove(validMoves[i])  # chuyen quan co den vi tri moi
+                                if (validMoves[i].isPawnPromotion):
+                                    promotion_choice = promote_pawn_popup()
+                                    gs.board[validMoves[i].endRow][validMoves[i].endCol] = validMoves[i].pieceMoved[
+                                                                                               0] + promotion_choice
                                 # if moveMade:
                                 #     move_Times.append(moveTime)
                                 #     move_counts.append(moveCounter)
@@ -99,6 +148,8 @@ def main():
             AIMove = SmartMoveFinder.findBestMoveMinMax(gs, validMoves)
             if (AIMove is None):
                 AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            if AIMove.isPawnPromotion:
+                AIMove.pieceMoved = AIMove.pieceMoved[0] + "Q"
             gs.makeMove(AIMove)
             moveMade = True
             animate = True

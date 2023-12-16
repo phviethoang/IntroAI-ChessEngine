@@ -50,8 +50,6 @@ class GameState():
         if move.pieceMoved == "bK":
             self.blackKingLocation = (move.endRow, move.endCol)
 
-        if move.isPawnPromotion:
-            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + "Q"
 
         if move.isEnpassantMove:
             self.board[move.startRow][move.endCol] = "--"

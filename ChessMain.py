@@ -90,7 +90,7 @@ def main():
     validMoves = gs.getValidMoves()
     gameOver = False
     playerOne = True
-    playerTwo = True
+    playerTwo = False
     while running:  # neu dang thuc thi chuong trinh
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
 

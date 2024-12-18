@@ -89,24 +89,6 @@ def draw_mode_selection_screen(screen):
     p.draw.rect(screen, p.Color("lightgray"), button1_rect)  # Nút Play With Human
     p.draw.rect(screen, p.Color("lightgray"), button2_rect)  # Nút Play With AI
 
-    # # Kiểm tra nếu chuột đang ở trong vùng của nút, đổi màu viền
-    # mouse_x, mouse_y = p.mouse.get_pos()
-    # hover1 = button1_rect.collidepoint(mouse_x, mouse_y)
-    # hover2 = button2_rect.collidepoint(mouse_x, mouse_y)
-    # # Vẽ viền sáng lên cho nút khi chuột hover vào
-    # if hover1:
-    #     p.draw.rect(screen, p.Color("dodgerblue"), button1_rect, 4)  # Viền sáng cho nút 1
-    #     print("Hovered1")
-    # if hover2:
-    #     p.draw.rect(screen, p.Color("dodgerblue"), button2_rect, 4)  # Viền sáng cho nút 2
-    #     print("Hovered2")
-    # # Vẽ màu khi hover vào
-    # if hover1:
-    #     p.draw.rect(screen, p.Color("lightblue"), button1_rect)  # Màu khi hover nút 1
-    #     print("Hovered1-color")
-    # if hover2:
-    #     p.draw.rect(screen, p.Color("lightblue"), button2_rect)  # Màu khi hover nút 2
-    #     print("Hovered1-color")
 
     screen.blit(button_text1, button1_rect.move(50, 15))
     screen.blit(button_text2, button2_rect.move(80, 15))
@@ -134,6 +116,7 @@ def draw_mode_selection_screen(screen):
                     return True  # Chọn chơi với người
                 elif button2_rect.collidepoint(x, y):
                     return False  # Chọn chơi với máy
+                
 def draw_game_screen(screen, gs, validMoves, sqSelected, moveLogFont):
     """
     Vẽ giao diện chơi cờ và nút Home.
@@ -161,16 +144,7 @@ def draw_game_screen(screen, gs, validMoves, sqSelected, moveLogFont):
     # Cập nhật màn hình
     p.display.flip()
     return home_button_rect
-    # # Kiểm tra sự kiện nhấn nút "Home"
-    # while True:
-    #     for event in p.event.get():
-    #         if event.type == p.QUIT:
-    #             p.quit()
-    #             sys.exit()
-    #         elif event.type == p.MOUSEBUTTONDOWN:
-    #             x, y = event.pos
-    #             if home_button_rect.collidepoint(x, y):  # Nhấn nút Home
-    #                 return "home"  # Trở về màn hình chọn chế độ
+
 def main():
     p.init()
     screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
@@ -272,7 +246,7 @@ def play_game(playerTwo):
                     animate = False
             # AI xử lý nếu không phải lượt người chơi
         if not gameOver and not humanTurn:
-            AIMove = SmartMoveFinder.findBestMoveMinMax(gs, validMoves)
+            AIMove = SmartMoveFinder.findBestMoveNegaMax(gs, validMoves)
             if (AIMove is None):
                 AIMove = SmartMoveFinder.findRandomMove(validMoves)
             if AIMove.isPawnPromotion:
@@ -311,136 +285,6 @@ def play_game(playerTwo):
 
         clock.tick(MAX_FPS)  # gioi han so khung hinh moi giay
         p.display.flip()  # không co che do full man hinh
-
-# # ham thực thi
-# def main():
-#     """
-#     Hàm chính của chương trình, thực hiện khởi tạo trạng thái ban đầu của bàn cờ, lấy thông tin click chuột của người chơi, 
-#     xử lý các sự kiện, thực hiện các nước đi hợp lệ, vẽ bàn cờ và kiểm tra kết thúc trò chơi.
-#     """
-
-#     # move_Times = []
-#     # move_counts = []
-#     p.init()
-#     screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
-#     clock = p.time.Clock()
-
-#     # Chọn chế độ chơi trước khi vào game
-#     PlayTwo = draw_mode_selection_screen(screen)
-
-#     screen.fill(p.Color("white"))
-#     moveLogFont = p.font.SysFont("Arial", 16, False, False)
-#     gs = ChessEngine.GameState()  # khoi tao trang thai ban dau
-#     animate = False
-#     moveMade = False  # flag varible for when a move is made
-#     loadImages()  # tao mang chua anh cac quan cờ
-#     running = True
-#     sqSelected = ()  # cac ô cờ được click
-#     playerClicks = []
-#     # lưu trư thong tin click cua nguoi choi
-#     validMoves = gs.getValidMoves()
-#     gameOver = False
-#     playerOne = True
-#     playerTwo = PlayTwo
-#     while running:  # neu dang thuc thi chuong trinh
-#         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
-
-#         for e in p.event.get():  # sử lý  kiện clicked chuột
-#             if e.type == p.QUIT:
-#                 running = False
-
-#             # mouse handle
-#             elif e.type == p.MOUSEBUTTONDOWN:
-#                 if not gameOver and humanTurn:
-#                     location = p.mouse.get_pos()
-#                     col = location[0] // SQ_SIZE
-#                     row = location[1] // SQ_SIZE
-#                     if sqSelected == (row, col) or col >= 8:
-#                         sqSelected = ()
-#                         playerClicks = []
-#                     else:
-#                         sqSelected = (row, col)
-#                         playerClicks.append(sqSelected)
-#                     if len(playerClicks) == 2:
-#                         move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
-#                         print(move.getChessNotation())  # in ra vi tri bat dau va ket thuc cua quan co
-#                         validMoves = gs.getValidMoves()
-#                         for i in range(len(validMoves)):
-#                             if move == validMoves[i]:
-#                                 gs.makeMove(validMoves[i])  # chuyen quan co den vi tri moi
-#                                 if (validMoves[i].isPawnPromotion):
-#                                     promotion_choice = promote_pawn_popup()
-#                                     gs.board[validMoves[i].endRow][validMoves[i].endCol] = validMoves[i].pieceMoved[
-#                                                                                                0] + promotion_choice
-#                                 # if moveMade:
-#                                 #     move_Times.append(moveTime)
-#                                 #     move_counts.append(moveCounter)
-#                                 moveMade = True
-#                                 animate = True
-#                                 sqSelected = ()  # khởi tạo lại trạng thái click
-#                                 playerClicks = []
-#                         if not moveMade:
-#                             playerClicks = [sqSelected]
-#             elif e.type == p.KEYDOWN:
-#                 if e.key == p.K_z:  # nhan z để quay trở lại
-#                     gs.undoMove()
-#                     moveMade = True
-#                     animate = False
-#                     validMoves = gs.getValidMoves()
-#                 if e.key == p.K_r:  # nhan r để reset game
-#                     gs = ChessEngine.GameState()
-#                     validMoves = gs.getValidMoves()
-#                     sqSelected = ()
-#                     playerClicks = []
-#                     moveMade = False
-#                     animate = False
-
-#         if not gameOver and not humanTurn:
-#             AIMove = SmartMoveFinder.findBestMoveMinMax(gs, validMoves)
-#             if (AIMove is None):
-#                 AIMove = SmartMoveFinder.findRandomMove(validMoves)
-#             if AIMove.isPawnPromotion:
-#                 AIMove.pieceMoved = AIMove.pieceMoved[0] + "Q"
-#             gs.makeMove(AIMove)
-#             moveMade = True
-#             animate = True
-
-#         if moveMade:
-#             if animate:
-#                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
-#             validMoves = gs.getValidMoves()
-#             moveMade = False
-#             animate = False
-
-#             # Cập nhật dữ liệu mỗi nước đi
-#             # move_Times.append(SmartMoveFinder.moveTime)
-#             # move_Times.append(SmartMoveFinder.moveCounter)
-
-#         drawGameState(screen, gs, validMoves, sqSelected, moveLogFont)  # ve ban co
-
-#         if gs.checkMate or gs.staleMate:
-#             gameOver = True
-#             drawEndGameText(screen,
-#                             "Stalemate" if gs.staleMate else "Black wins by checkmate" if gs.whiteToMove else "White wins by checkmate")
-
-#         clock.tick(MAX_FPS)  # gioi han so khung hinh moi giay
-#         p.display.flip()  # không co che do full man hinh
-
-
-# # vẽ ban co va quan co
-# def drawGameState(screen, gs, validMoves, sqSelected, moveLogFont):
-#     """
-#     Vẽ trạng thái hiện tại của bàn cờ.
-
-#     :param screen: pygame.Surface object, màn hình hiển thị bàn cờ
-#     :param gs: GameState object, trạng thái hiện tại của trò chơi
-#     :param validMoves: list, danh sách các nước đi hợp lệ
-#     :param sqSelected: tuple, tọa độ ô cờ đang được chọn
-#     """
-#     drawBoard(screen)
-#     highlightSquares(screen, gs, validMoves, sqSelected)
-#     drawPieces(screen, gs.board)
-#     drawMoveLog(screen, gs, moveLogFont)
 
 
 def drawBoard(screen):
@@ -552,21 +396,6 @@ def animateMove(move, screen, board, clock):
         p.display.flip()
         clock.tick(60)
 
-
-# def drawEndGameText(screen, text):
-#     """
-#     Vẽ text trên màn hình.
-    
-#     :param screen: pygame.Surface object, màn hình hiển thị bàn cờ
-#     :param text: str, text cần vẽ
-#     """
-#     font = p.font.SysFont("Helvitca", 32, True, False)
-#     textObject = font.render(text, 0, p.Color('Black'))
-#     textLocation = p.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH / 2 - textObject.get_width() / 2,
-#                                                                 BOARD_HEIGHT / 2 - textObject.get_height() / 2)
-#     screen.blit(textObject, textLocation)
-#     textObject = font.render(text, 0, p.Color("Black"))
-#     screen.blit(textObject, textLocation.move(2, 2))
 def draw_end_game_message(screen, message):
     """
     Hàm vẽ thông báo kết quả khi trò chơi kết thúc (checkmate, stalemate, v.v.)

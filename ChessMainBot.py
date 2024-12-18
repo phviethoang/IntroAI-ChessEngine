@@ -10,7 +10,7 @@ SQ_SIZE = HEIGHT // DIMENSION
 # cho animations
 MAX_FPS = 15
 IMAGES = {}
-
+MAX_MOVES=100
 
 def loadImages():
     """
@@ -37,20 +37,18 @@ def main():
     black_move_times = []
     white_move_counts = []
     black_move_counts = []
-
-    while not (gs.checkMate or gs.staleMate):
-        AIMove = SmartMoveFinder.findBestMoveMinMax(gs, validMoves)
+    move_count=0
+    while not (gs.checkMate or gs.staleMate or move_count >= MAX_MOVES):
+        AIMove = SmartMoveFinder.findBestMoveNegaMax(gs, validMoves)
         if AIMove is None:
             AIMove = SmartMoveFinder.findRandomMove(validMoves)
         gs.makeMove(AIMove)
 
         # Thu thập dữ liệu hiệu suất
         if gs.whiteToMove:
-            # Nếu bây giờ là lượt của quân trắng, ghi nhận nước đi cuối cùng của quân đen
             black_move_times.append(SmartMoveFinder.moveTime)
             black_move_counts.append(SmartMoveFinder.moveCounter)
         else:
-            # Nếu bây giờ là lượt của quân đen, ghi nhận nước đi cuối cùng của quân trắng
             white_move_times.append(SmartMoveFinder.moveTime)
             white_move_counts.append(SmartMoveFinder.moveCounter)
 
@@ -59,9 +57,16 @@ def main():
         clock.tick(MAX_FPS)
         p.display.flip()
 
+        move_count += 1
+        if(move_count%10==0): print("Move count: ", move_count)
+
+    # Kiểm tra nếu trận đấu kết thúc vì đạt giới hạn nước đi
+    if move_count >= MAX_MOVES:
+        print("Stalemate!")
+
     # Vẽ biểu đồ hiệu suất
-    performance.plot_performance(white_move_times, white_move_counts, "white_performance.png")
-    performance.plot_performance(black_move_times, black_move_counts, "black_performance.png")
+    performance.plot_performance(white_move_times, white_move_counts, "3_mini_white_performance.png")
+    performance.plot_performance(black_move_times, black_move_counts, "3_mini_black_performance.png")
 
 
 def drawGameState(screen, gs, validMoves):

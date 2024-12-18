@@ -154,7 +154,7 @@ piecePositionScoresEndGame = {"wN": knightScoresEndGame,
                        }
 
 # Điểm số khi chiếu hết
-CHECKAMTE = 100000000
+CHECKMATE = 100000000
 
 # Điểm số khi hòa cờ
 STABLEMATE = 0
@@ -190,7 +190,7 @@ def findBestMove(gs, validMoves):
     """
     
     turnMultiplire = 1 if gs.whiteToMove else -1
-    opponentMinMaxScore = CHECKAMTE
+    opponentMinMaxScore = CHECKMATE
     bestMove = None
     random.shuffle(validMoves)
     for playerMove in validMoves:
@@ -199,13 +199,13 @@ def findBestMove(gs, validMoves):
         if gs.staleMate:
             opponentMaxScore = STABLEMATE
         elif gs.checkMate:
-            opponentMaxScore = -CHECKAMTE
+            opponentMaxScore = -CHECKMATE
         else:
-            opponentMaxScore = -CHECKAMTE
+            opponentMaxScore = -CHECKMATE
             for opponentsMove in opponentsMoves:
                 gs.makeMove(opponentsMove)
                 if gs.checkMate:
-                    score = CHECKAMTE
+                    score = CHECKMATE
                 elif gs.staleMate:
                     score = STABLEMATE
                 else:
@@ -220,7 +220,26 @@ def findBestMove(gs, validMoves):
     return bestMove
 
 
-def findBestMoveMinMax(gs, validMoves):
+# def findBestMoveNegaMax(gs, validMoves):
+#     """
+#     Hàm tìm nước đi tốt nhất cho một bên bằng thuật toán Negamax.
+
+#     Parameters:
+#     gs (GameState): Trạng thái hiện tại của bàn cờ.
+#     validMoves (list): Danh sách các nước đi hợp lệ.
+
+#     Returns:
+#     tuple: Tọa độ của quân cờ được di chuyển và tọa độ đích của nước đi.
+#     """
+#     global nextMove, moveCounter, moveTime
+#     start_time = time.time()
+#     nextMove = None
+#     random.shuffle(validMoves)
+#     findMoveNegaMax(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
+#     end_time = time.time()
+#     moveTime = (end_time - start_time) * 1000
+#     return nextMove
+def findBestMoveNegaMax(gs, validMoves):
     """
     Hàm tìm nước đi tốt nhất cho một bên bằng thuật toán Minimax.
 
@@ -234,22 +253,27 @@ def findBestMoveMinMax(gs, validMoves):
     global nextMove, moveCounter, moveTime
     start_time = time.time()
     nextMove = None
-    random.shuffle(validMoves)
-    findMoveNegaMax(gs, validMoves, DEPTH, -CHECKAMTE, CHECKAMTE, 1 if gs.whiteToMove else -1)
+    random.shuffle(validMoves)  # Xáo trộn các nước đi để tránh cùng một lựa chọn khi điểm số bằng nhau
+    
+    # Gọi hàm findMoveMiniMax để tính toán nước đi tốt nhất
+    findMoveMiniMax(gs, validMoves, DEPTH, gs.whiteToMove, -CHECKMATE, CHECKMATE)
+    
     end_time = time.time()
-    moveTime = (end_time - start_time)
+    moveTime = (end_time - start_time) * 1000  # Tính thời gian thực thi bằng mili giây
     return nextMove
 
 
-def findMoveMinMax(gs, validMoves, depth, whiteToMove):
+def findMoveMiniMax(gs, validMoves, depth, whiteToMove, alpha, beta):
     """
-    Hàm tìm điểm số của một nước đi bằng thuật toán Minimax.
+    Hàm tìm điểm số của một nước đi bằng thuật toán Minimax với cắt tỉa Alpha-Beta.
 
     Parameters:
     gs (GameState): Trạng thái hiện tại của bàn cờ.
     validMoves (list): Danh sách các nước đi hợp lệ.
     depth (int): Độ sâu tìm kiếm.
     whiteToMove (bool): True nếu là lượt đi của quân trắng, False nếu là lượt đi của quân đen.
+    alpha (int): Giá trị alpha, đại diện cho điểm số tốt nhất mà người chơi MAX có thể đảm bảo.
+    beta (int): Giá trị beta, đại diện cho điểm số tốt nhất mà người chơi MIN có thể đảm bảo.
 
     Returns:
     int: Điểm số của nước đi.
@@ -257,18 +281,18 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
     global nextMove, moveCounter
     moveCounter += 1
     random.shuffle(validMoves)
+    
     if depth == 0:
         return scoreBoard(gs)
 
-    if whiteToMove:
-        maxScore = -CHECKAMTE
+    if whiteToMove:  # Lượt của MAX (trắng)
+        maxScore = -CHECKMATE
         for move in validMoves:
-            moveCounter += 1
             gs.makeMove(move)
             tmpCheckMate = gs.checkMate
             tmpStaleMate = gs.staleMate
             nextMoves = gs.getValidMoves()
-            score = findMoveMinMax(gs, nextMoves, depth - 1, False)
+            score = findMoveMiniMax(gs, nextMoves, depth - 1, False, alpha, beta)
             if score > maxScore:
                 maxScore = score
                 if depth == DEPTH:
@@ -276,15 +300,20 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
             gs.checkMate = tmpCheckMate
             gs.staleMate = tmpStaleMate
             gs.undoMove()
+
+            alpha = max(alpha, maxScore)
+            if beta <= alpha:  # Cắt tỉa Beta
+                break
         return maxScore
-    else:
-        minScore = CHECKAMTE
+
+    else:  # Lượt của MIN (đen)
+        minScore = CHECKMATE
         for move in validMoves:
             gs.makeMove(move)
             tmpCheckMate = gs.checkMate
             tmpStaleMate = gs.staleMate
             nextMoves = gs.getValidMoves()
-            score = findMoveMinMax(gs, nextMoves, depth - 1, True)
+            score = findMoveMiniMax(gs, nextMoves, depth - 1, True, alpha, beta)
             if score < minScore:
                 minScore = score
                 if depth == DEPTH:
@@ -292,7 +321,64 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
             gs.checkMate = tmpCheckMate
             gs.staleMate = tmpStaleMate
             gs.undoMove()
+
+            beta = min(beta, minScore)
+            if beta <= alpha:  # Cắt tỉa Alpha
+                break
         return minScore
+
+# def findMoveMiniMax(gs, validMoves, depth, whiteToMove):
+#     """
+#     Hàm tìm điểm số của một nước đi bằng thuật toán Minimax.
+
+#     Parameters:
+#     gs (GameState): Trạng thái hiện tại của bàn cờ.
+#     validMoves (list): Danh sách các nước đi hợp lệ.
+#     depth (int): Độ sâu tìm kiếm.
+#     whiteToMove (bool): True nếu là lượt đi của quân trắng, False nếu là lượt đi của quân đen.
+
+#     Returns:
+#     int: Điểm số của nước đi.
+#     """
+#     global nextMove, moveCounter
+#     moveCounter += 1
+#     random.shuffle(validMoves)
+#     if depth == 0:
+#         return scoreBoard(gs)
+
+#     if whiteToMove:
+#         maxScore = -CHECKMATE
+#         for move in validMoves:
+#             moveCounter += 1
+#             gs.makeMove(move)
+#             tmpCheckMate = gs.checkMate
+#             tmpStaleMate = gs.staleMate
+#             nextMoves = gs.getValidMoves()
+#             score = findMoveMiniMax(gs, nextMoves, depth - 1, False)
+#             if score > maxScore:
+#                 maxScore = score
+#                 if depth == DEPTH:
+#                     nextMove = move
+#             gs.checkMate = tmpCheckMate
+#             gs.staleMate = tmpStaleMate
+#             gs.undoMove()
+#         return maxScore
+#     else:
+#         minScore = CHECKMATE
+#         for move in validMoves:
+#             gs.makeMove(move)
+#             tmpCheckMate = gs.checkMate
+#             tmpStaleMate = gs.staleMate
+#             nextMoves = gs.getValidMoves()
+#             score = findMoveMiniMax(gs, nextMoves, depth - 1, True)
+#             if score < minScore:
+#                 minScore = score
+#                 if depth == DEPTH:
+#                     nextMove = move
+#             gs.checkMate = tmpCheckMate
+#             gs.staleMate = tmpStaleMate
+#             gs.undoMove()
+#         return minScore
 
 
 def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
@@ -315,7 +401,7 @@ def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
 
-    maxScore = - CHECKAMTE
+    maxScore = - CHECKMATE
     for move in validMoves:
         moveCounter += 1
         gs.makeMove(move)
@@ -324,7 +410,7 @@ def findMoveNegaMax(gs, validMoves, depth, alpha, beta, turnMultiplier):
         nextMoves = gs.getValidMoves()
         if len(nextMoves) == 0:
             if gs.checkMate:
-                score = turnMultiplier * CHECKAMTE
+                score = turnMultiplier * CHECKMATE
             elif gs.staleMate:
                 score = STABLEMATE
         else:
@@ -355,9 +441,9 @@ def scoreBoard(gs):
     """
     if gs.checkMate:
         if gs.whiteToMove:
-            return -CHECKAMTE  # Den Win
+            return -CHECKMATE  # Den Win
         else:
-            return CHECKAMTE  # Trang win
+            return CHECKMATE  # Trang win
     elif gs.staleMate:
         return STABLEMATE
 
@@ -395,9 +481,9 @@ def scoreMaterial(gs):
     """
     if gs.checkMate:
         if gs.whiteToMove:
-            return -CHECKAMTE  # Den Win
+            return -CHECKMATE  # Den Win
         else:
-            return CHECKAMTE  # Trang win
+            return CHECKMATE  # Trang win
     elif gs.staleMate:
         return STABLEMATE
 

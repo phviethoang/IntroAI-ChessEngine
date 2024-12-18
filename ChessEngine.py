@@ -217,35 +217,36 @@ class GameState():
         """
 
         if self.whiteToMove:
-            if self.board[row - 1][col] == "--":
+            if row - 1 >= 0 and self.board[row - 1][col] == "--":
                 moves.append(Move((row, col), (row - 1, col), self.board))
                 if row == 6 and self.board[row - 2][col] == "--":
                     moves.append(Move((row, col), (row - 2, col), self.board))
-            if col - 1 >= 0:
+            if row - 1 >= 0 and col - 1 >= 0:
                 if self.board[row - 1][col - 1][0] == 'b':
                     moves.append(Move((row, col), (row - 1, col - 1), self.board))
                 elif (row - 1, col - 1) == self.enpassantPossible:
                     moves.append(Move((row, col), (row - 1, col - 1), self.board, isEnpassantPossible=True))
-            if col + 1 <= 7:
+            if row - 1 >= 0 and col + 1 <= 7:
                 if self.board[row - 1][col + 1][0] == 'b':
                     moves.append(Move((row, col), (row - 1, col + 1), self.board))
                 elif (row - 1, col + 1) == self.enpassantPossible:
                     moves.append(Move((row, col), (row - 1, col + 1), self.board, isEnpassantPossible=True))
         else:
-            if self.board[row + 1][col] == "--":
+            if row + 1 <= 7 and self.board[row + 1][col] == "--":
                 moves.append(Move((row, col), (row + 1, col), self.board))
                 if row == 1 and self.board[row + 2][col] == "--":
                     moves.append(Move((row, col), (row + 2, col), self.board))
-            if col - 1 >= 0:
+            if row + 1 <= 7 and col - 1 >= 0:
                 if self.board[row + 1][col - 1][0] == 'w':
                     moves.append(Move((row, col), (row + 1, col - 1), self.board))
                 elif (row + 1, col - 1) == self.enpassantPossible:
                     moves.append(Move((row, col), (row + 1, col - 1), self.board, isEnpassantPossible=True))
-            if col + 1 <= 7:
+            if row + 1 <= 7 and col + 1 <= 7:
                 if self.board[row + 1][col + 1][0] == 'w':
                     moves.append(Move((row, col), (row + 1, col + 1), self.board))
                 elif (row + 1, col + 1) == self.enpassantPossible:
                     moves.append(Move((row, col), (row + 1, col + 1), self.board, isEnpassantPossible=True))
+
 
     # nhận tất cả các đường di chuyển của quân xe tại vị trí row, col
     def getRookMoves(self, r, c, moves):

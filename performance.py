@@ -6,11 +6,15 @@ import pandas as pd
 
 
 def plot_performance(move_times, move_counts, save_path='performance_charts'):
+    # Kiểm tra và tạo thư mục nếu chưa tồn tại
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)  # Tạo thư mục lưu trữ nếu chưa có
+
     # Tạo DataFrame từ dữ liệu
     df = pd.DataFrame({'row1': move_times})
 
     # Ghi DataFrame vào file CSV
-    df.to_csv('your_file.csv', index=False)
+    df.to_csv(os.path.join(save_path, 'your_file.csv'), index=False)
 
     # Vẽ biểu đồ thời gian xử lý
     plt.figure(figsize=(10, 5))
@@ -33,7 +37,7 @@ def plot_performance(move_times, move_counts, save_path='performance_charts'):
     plt.show()
 
     # Ghi dữ liệu vào file CSV
-    with open(os.path.join(save_path, 'data.csv'), 'w', newline='') as file:
+    with open(os.path.join(save_path, 'data.csv'), 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(['Thời gian xử lý', 'Số lượng nước đi'])
         for time, count in zip(move_times, move_counts):

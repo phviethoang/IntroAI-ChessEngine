@@ -36,7 +36,7 @@ python ChessMainBot.py
 - `requirements.txt`: Danh sách các thư viện cần thiết.
 - `ChessMainBot.py`: Một phiên bản khác chạy trò chơi để theo dõi Máy vs Máy
 ## Các thành viên trong nhóm
-- [Phạm Việt Hoàng - 20224854]
+- [Phạm Việt Hoàng - 20224854] (Trưởng nhóm)
 - [Đoàn Mạnh Hùng - 20224995]
 - [Phạm Thanh An - 20224911]
 - [Nguyễn Thị Trà My - 20225049]
